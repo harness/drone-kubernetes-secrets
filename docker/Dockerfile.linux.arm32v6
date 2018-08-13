@@ -1,0 +1,9 @@
+FROM arm32v6/alpine:3.6
+EXPOSE 3000
+
+ENV GODEBUG netdns=go
+
+RUN apk add -U --no-cache ca-certificates
+
+ADD release/linux/amd64/drone-kubernetes-secrets /bin/
+ENTRYPOINT ["/bin/drone-kubernetes-secrets"]
