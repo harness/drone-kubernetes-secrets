@@ -1,0 +1,33 @@
+workspace:
+  base: /go
+  path: src/github.com/drone/drone-kubernetes-secrets
+
+pipeline:
+- test:
+    image: golang:1.10
+    commands:
+    - go get -u github.com/golang/dep/cmd/dep
+    - dep ensure
+    - go test -v -cover ./...
+    - CGO_ENABLED=0 go build -o release/linux/amd64/drone-kubernetes-secrets github.com/drone/drone-kubernetes-secrets/cmd/drone-kubernetes-secrets
+
+- publish:
+    image: plugins/docker
+    dockerfile: Dockerfile
+    repo: drone/kubernetes-secrets
+    auto_tag: true
+    secrets:
+    - docker_username
+    - docker_password
+    when:
+      event:
+      - push
+      - tag
+
+secrets:
+  docker_username:
+    external:
+      name: drone/docker#username
+  docker_password:
+    external:
+      name: drone/docker#password
