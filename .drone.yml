@@ -1,27 +1,406 @@
 ---
-kind: pipeline
-name: default
+metadata:
+  name: linux-amd64
 
 platform:
-  os: linux
-  arch: amd64
+  name: linux/amd64
 
-steps:
-- name: build
-  image: golang:1.11
-  commands:
-  - go test -v -cover ./...
-  - CGO_ENABLED=0 go build -o release/linux/amd64/drone-kubernetes-secrets github.com/drone/drone-kubernetes-secrets/cmd/drone-kubernetes-secrets
+pipeline:
+- prepare:
+    image: golang:1.10
+    commands:
+    - go get -u github.com/golang/dep/cmd/dep
+    - dep ensure
+    - dep status
 
-- name: publish
-  image: plugins/docker
-  settings:
-    auto_tag: true
-    dockerfile: Dockerfile
-    password:
-      from_secret: docker_password
+- test:
+    image: golang:1.10
+    commands:
+    - go test -v -cover ./...
+
+- build:
+    image: golang:1.10
+    environment:
+    - CGO_ENABLED=0
+    commands:
+    - go build -o release/linux/amd64/drone-kubernetes-secrets ./cmd/drone-kubernetes-secrets
+
+- publish:
+    image: plugins/docker:17.12
+    dockerfile: docker/Dockerfile.linux.amd64
     repo: drone/kubernetes-secrets
-    username:
-      from_secret: docker_username
+    secrets:
+    - docker_username
+    - docker_password
+    when:
+      event:
+      - push
+      - tag
 
-...
+- tarball:
+    image: alpine:3.6
+    commands:
+    - tar -cvzf release/drone-kubernetes-secrets_linux_amd64.tar.gz -C release/linux/amd64 drone-kubernetes-secrets
+    - sha256sum release/drone-kubernetes-secrets_linux_amd64.tar.gz > release/drone-kubernetes-secrets_linux_amd64.tar.gz.sha256
+    when:
+      event:
+      - tag
+
+- gpgsign:
+    image: plugins/gpgsign:1
+    detach_sign: true
+    files:
+    - release/*.tar.gz
+    - release/*.tar.gz.sha256
+    secrets:
+    - gpgsign_key
+    - gpgsign_passphrase
+    when:
+      event:
+      - tag
+
+- github:
+    image: plugins/github-release:1
+    files:
+    - release/*.tar.gz
+    - release/*.tar.gz.sha256
+    - release/*.tar.gz.asc
+    secrets:
+    - github_token
+    when:
+      event:
+      - tag
+
+secrets:
+  docker_username:
+    external:
+      name: drone/docker#username
+  docker_password:
+    external:
+      name: drone/docker#password
+  gpgsign_key:
+    external:
+      name: drone/gpgsign#key
+  gpgsign_passphrase:
+    external:
+      name: drone/gpgsign#passphrase
+  github_token:
+    external:
+      name: drone/github#token
+
+---
+metadata:
+  name: linux-armv8
+
+platform:
+  name: linux/arm64
+  version: 8
+
+pipeline:
+- prepare:
+    image: golang:1.10
+    commands:
+    - go get -u github.com/golang/dep/cmd/dep
+    - dep ensure
+    - dep status
+
+- test:
+    image: golang:1.10
+    commands:
+    - go test -v -cover ./...
+
+- build:
+    image: golang:1.10
+    environment:
+    - CGO_ENABLED=0
+    commands:
+    - go build -o release/linux/arm64v8/drone-kubernetes-secrets ./cmd/drone-kubernetes-secrets
+
+- publish:
+    image: plugins/docker:17.12
+    dockerfile: docker/Dockerfile.linux.arm64v8
+    repo: drone/kubernetes-secrets
+    secrets:
+    - docker_username
+    - docker_password
+    when:
+      event:
+      - push
+      - tag
+
+- tarball:
+    image: alpine:3.6
+    commands:
+    - tar -cvzf release/drone-kubernetes-secrets_linux_arm64v8.tar.gz -C release/linux/arm64v8 drone-kubernetes-secrets
+    - sha256sum release/drone-kubernetes-secrets_linux_arm64v8.tar.gz > release/drone-kubernetes-secrets_linux_arm64v8.tar.gz.sha256
+    when:
+      event:
+      - tag
+
+- gpgsign:
+    image: plugins/gpgsign:1
+    detach_sign: true
+    files:
+    - release/*.tar.gz
+    - release/*.tar.gz.sha256
+    secrets:
+    - gpgsign_key
+    - gpgsign_passphrase
+    when:
+      event:
+      - tag
+
+- github:
+    image: plugins/github-release:1
+    files:
+    - release/*.tar.gz
+    - release/*.tar.gz.sha256
+    - release/*.tar.gz.asc
+    secrets:
+    - github_token
+    when:
+      event:
+      - tag
+
+secrets:
+  docker_username:
+    external:
+      name: drone/docker#username
+  docker_password:
+    external:
+      name: drone/docker#password
+  gpgsign_key:
+    external:
+      name: drone/gpgsign#key
+  gpgsign_passphrase:
+    external:
+      name: drone/gpgsign#passphrase
+  github_token:
+    external:
+      name: drone/github#token
+
+---
+metadata:
+  name: linux-armv7
+
+platform:
+  name: linux/arm
+  version: 7
+
+pipeline:
+- prepare:
+    image: golang:1.10
+    commands:
+    - go get -u github.com/golang/dep/cmd/dep
+    - dep ensure
+    - dep status
+
+- test:
+    image: golang:1.10
+    commands:
+    - go test -v -cover ./...
+
+- build:
+    image: golang:1.10
+    environment:
+    - CGO_ENABLED=0
+    commands:
+    - go build -o release/linux/arm32v7/drone-kubernetes-secrets ./cmd/drone-kubernetes-secrets
+
+- publish:
+    image: plugins/docker:17.12
+    dockerfile: docker/Dockerfile.linux.arm32v7
+    repo: drone/kubernetes-secrets
+    secrets:
+    - docker_username
+    - docker_password
+    when:
+      event:
+      - push
+      - tag
+
+- tarball:
+    image: alpine:3.6
+    commands:
+    - tar -cvzf release/drone-kubernetes-secrets_linux_arm32v7.tar.gz -C release/linux/arm32v7 drone-kubernetes-secrets
+    - sha256sum release/drone-kubernetes-secrets_linux_arm32v7.tar.gz > release/drone-kubernetes-secrets_linux_arm32v7.tar.gz.sha256
+    when:
+      event:
+      - tag
+
+- gpgsign:
+    image: plugins/gpgsign:1
+    detach_sign: true
+    files:
+    - release/*.tar.gz
+    - release/*.tar.gz.sha256
+    secrets:
+    - gpgsign_key
+    - gpgsign_passphrase
+    when:
+      event:
+      - tag
+
+- github:
+    image: plugins/github-release:1
+    files:
+    - release/*.tar.gz
+    - release/*.tar.gz.sha256
+    - release/*.tar.gz.asc
+    secrets:
+    - github_token
+    when:
+      event:
+      - tag
+
+secrets:
+  docker_username:
+    external:
+      name: drone/docker#username
+  docker_password:
+    external:
+      name: drone/docker#password
+  gpgsign_key:
+    external:
+      name: drone/gpgsign#key
+  gpgsign_passphrase:
+    external:
+      name: drone/gpgsign#passphrase
+  github_token:
+    external:
+      name: drone/github#token
+
+---
+metadata:
+  name: linux-armv6
+
+platform:
+  name: linux/arm
+  version: 6
+
+pipeline:
+- prepare:
+    image: golang:1.10
+    commands:
+    - go get -u github.com/golang/dep/cmd/dep
+    - dep ensure
+    - dep status
+
+- test:
+    image: golang:1.10
+    commands:
+    - go test -v -cover ./...
+
+- build:
+    image: golang:1.10
+    environment:
+    - CGO_ENABLED=0
+    commands:
+    - go build -o release/linux/arm32v6/drone-kubernetes-secrets ./cmd/drone-kubernetes-secrets
+
+- publish:
+    image: plugins/docker:17.12
+    dockerfile: docker/Dockerfile.linux.arm32v6
+    repo: drone/kubernetes-secrets
+    secrets:
+    - docker_username
+    - docker_password
+    when:
+      event:
+      - push
+      - tag
+
+- tarball:
+    image: alpine:3.6
+    commands:
+    - tar -cvzf release/drone-kubernetes-secrets_linux_arm32v6.tar.gz -C release/linux/arm32v6 drone-kubernetes-secrets
+    - sha256sum release/drone-kubernetes-secrets_linux_arm32v6.tar.gz > release/drone-kubernetes-secrets_linux_arm32v6.tar.gz.sha256
+    when:
+      event:
+      - tag
+
+- gpgsign:
+    image: plugins/gpgsign:1
+    detach_sign: true
+    files:
+    - release/*.tar.gz
+    - release/*.tar.gz.sha256
+    secrets:
+    - gpgsign_key
+    - gpgsign_passphrase
+    when:
+      event:
+      - tag
+
+- github:
+    image: plugins/github-release:1
+    files:
+    - release/*.tar.gz
+    - release/*.tar.gz.sha256
+    - release/*.tar.gz.asc
+    secrets:
+    - github_token
+    when:
+      event:
+      - tag
+
+secrets:
+  docker_username:
+    external:
+      name: drone/docker#username
+  docker_password:
+    external:
+      name: drone/docker#password
+  gpgsign_key:
+    external:
+      name: drone/gpgsign#key
+  gpgsign_passphrase:
+    external:
+      name: drone/gpgsign#passphrase
+  github_token:
+    external:
+      name: drone/github#token
+
+---
+metadata:
+  name: manifest
+
+pipeline:
+- manifest:
+    image: plugins/manifest:1
+    spec: manifest.tmpl
+    auto_tag: true
+    ignore_missing: true
+    secrets:
+    - docker_username
+    - docker_password
+    when:
+      event:
+      - push
+      - tag
+
+# - microbadger:
+#     image: plugins/webhook:1
+#     url:
+#     when:
+#       event:
+#       - push
+#       - tag
+
+trigger:
+  status:
+  - success
+
+depends_on:
+- linux-amd64
+- linux-armv8
+- linux-armv7
+- linux-armv6
+
+secrets:
+  docker_username:
+    external:
+      name: drone/docker#username
+  docker_password:
+    external:
+      name: drone/docker#password
