@@ -7,7 +7,7 @@ package plugin
 import (
 	"context"
 	"errors"
-	"strings"
+	"fmt"
 
 	"github.com/drone/drone-go/drone"
 	"github.com/drone/drone-go/plugin/secret"
@@ -31,14 +31,17 @@ type plugin struct {
 }
 
 func (p *plugin) Find(ctx context.Context, req *secret.Request) (*drone.Secret, error) {
-	// drone requests the secret name in secret:key format.
-	// Extract the secret and key from the string.
-	parts := strings.Split(req.Name, "#")
-	if len(parts) != 2 {
-		return nil, errors.New("invalid or missing secret key")
+	fmt.Printf("%+v\n", req)
+
+	if req.Path == "" {
+		return nil, errors.New("invalid or missing secret path")
 	}
-	path := parts[0]
-	name := parts[1]
+	if req.Name == "" {
+		return nil, errors.New("invalid or missing secret name")
+	}
+
+	path := req.Path
+	name := req.Name
 
 	// makes an api call to the kubernetes secrets manager and
 	// attempts to retrieve the secret at the requested path.

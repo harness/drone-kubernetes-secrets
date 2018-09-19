@@ -9,7 +9,7 @@ pipeline:
     - go get -u github.com/golang/dep/cmd/dep
     - dep ensure
     - go test -v -cover ./...
-    - CGO_ENABLED=0 go build -o release/linux/amd64/drone-kubernetes-secrets github.com/drone/drone-kubernetes-secrets/cmd/drone-kubernetes-secrets
+    - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o release/linux/amd64/drone-kubernetes-secrets github.com/drone/drone-kubernetes-secrets/cmd/drone-kubernetes-secrets
 
 - publish:
     image: plugins/docker
