@@ -7,7 +7,6 @@ package plugin
 import (
 	"context"
 	"errors"
-	"strings"
 
 	"github.com/drone/drone-go/drone"
 	"github.com/drone/drone-go/plugin/secret"
@@ -31,23 +30,14 @@ type plugin struct {
 }
 
 func (p *plugin) Find(ctx context.Context, req *secret.Request) (*drone.Secret, error) {
-	// drone requests the secret name in secret:key format.
-	// Extract the secret and key from the string.
-	parts := strings.Split(req.Name, "#")
-	if len(parts) != 2 {
-		return nil, errors.New("invalid or missing secret key")
-	}
-	path := parts[0]
-	name := parts[1]
-
 	// makes an api call to the kubernetes secrets manager and
 	// attempts to retrieve the secret at the requested path.
 	var secret v1.Secret
-	err := p.client.Get(ctx, p.namespace, path, &secret)
+	err := p.client.Get(ctx, p.namespace, req.Path, &secret)
 	if err != nil {
 		return nil, err
 	}
-	data, ok := secret.Data[name]
+	data, ok := secret.Data[req.Name]
 	if !ok {
 		return nil, errors.New("secret not found")
 	}
@@ -69,7 +59,6 @@ func (p *plugin) Find(ctx context.Context, req *secret.Request) (*drone.Secret, 
 	}
 
 	return &drone.Secret{
-		Name: name,
 		Data: string(data),
 		Pull: true, // always true. use X-Drone-Events to prevent pull requests.
 		Fork: true, // always true. use X-Drone-Events to prevent pull requests.

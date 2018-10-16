@@ -33,7 +33,8 @@ func TestPlugin(t *testing.T) {
 		File("testdata/secret.protobuf")
 
 	req := &secret.Request{
-		Name: "docker#username",
+		Path: "docker",
+		Name: "username",
 		Build: drone.Build{
 			Event: "push",
 		},
@@ -49,7 +50,6 @@ func TestPlugin(t *testing.T) {
 	}
 
 	want := &drone.Secret{
-		Name: "username",
 		Data: "admin",
 		Pull: true,
 		Fork: true,
@@ -79,7 +79,8 @@ func TestPlugin_FilterRepo(t *testing.T) {
 		File("testdata/secret.protobuf")
 
 	req := &secret.Request{
-		Name: "docker#username",
+		Path: "docker",
+		Name: "username",
 		Build: drone.Build{
 			Event: "push",
 		},
@@ -118,7 +119,8 @@ func TestPlugin_FilterEvent(t *testing.T) {
 		File("testdata/secret.protobuf")
 
 	req := &secret.Request{
-		Name: "docker#username",
+		Path: "docker",
+		Name: "username",
 		Build: drone.Build{
 			Event: "pull_request",
 		},
@@ -143,20 +145,6 @@ func TestPlugin_FilterEvent(t *testing.T) {
 	}
 }
 
-func TestPlugin_InvalidName(t *testing.T) {
-	req := &secret.Request{
-		Name: "docker",
-	}
-	_, err := New(nil, "default").Find(noContext, req)
-	if err == nil {
-		t.Errorf("Expect invalid path error")
-		return
-	}
-	if got, want := err.Error(), "invalid or missing secret key"; got != want {
-		t.Errorf("Want error message %s, got %s", want, got)
-	}
-}
-
 func TestPlugin_NotFound(t *testing.T) {
 	defer gock.Off()
 
@@ -171,7 +159,8 @@ func TestPlugin_NotFound(t *testing.T) {
 		File("testdata/error.protobuf")
 
 	req := &secret.Request{
-		Name: "docker#username",
+		Path: "docker",
+		Name: "username",
 		Build: drone.Build{
 			Event: "push",
 		},
@@ -206,7 +195,8 @@ func TestPlugin_InvalidAttribute(t *testing.T) {
 		File("testdata/secret.protobuf")
 
 	req := &secret.Request{
-		Name: "docker#token",
+		Path: "docker",
+		Name: "token",
 		Build: drone.Build{
 			Event: "push",
 		},
