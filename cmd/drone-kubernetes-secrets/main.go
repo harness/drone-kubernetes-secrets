@@ -23,7 +23,7 @@ type config struct {
 	Debug     bool   `envconfig:"DEBUG"`
 	Address   string `envconfig:"SERVER_ADDRESS"`
 	Secret    string `envconfig:"SECRET_KEY"`
-	Config    string `envconfig:"KUBERNETES_CONFIG" defult:"/etc/kubernetes/config"`
+	Config    string `envconfig:"KUBERNETES_CONFIG" default:"/etc/kubernetes/config"`
 	Namespace string `envconfig:"KUBERNETES_NAMESPACE"`
 }
 
