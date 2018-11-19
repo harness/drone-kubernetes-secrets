@@ -7,7 +7,6 @@ package plugin
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/drone/drone-go/drone"
 	"github.com/drone/drone-go/plugin/secret"
@@ -31,8 +30,6 @@ type plugin struct {
 }
 
 func (p *plugin) Find(ctx context.Context, req *secret.Request) (*drone.Secret, error) {
-	fmt.Printf("%+v\n", req)
-
 	if req.Path == "" {
 		return nil, errors.New("invalid or missing secret path")
 	}
