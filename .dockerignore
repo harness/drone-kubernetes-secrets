@@ -1,0 +1,12 @@
+.dockerignore
+.drone.yml
+.env
+.git
+.gitignore
+LICENSE
+cmd/*
+docker/*
+plugin/*
+go.mod
+go.sum
+

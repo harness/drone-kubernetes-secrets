@@ -30,14 +30,24 @@ type plugin struct {
 }
 
 func (p *plugin) Find(ctx context.Context, req *secret.Request) (*drone.Secret, error) {
+	if req.Path == "" {
+		return nil, errors.New("invalid or missing secret path")
+	}
+	if req.Name == "" {
+		return nil, errors.New("invalid or missing secret name")
+	}
+
+	path := req.Path
+	name := req.Name
+
 	// makes an api call to the kubernetes secrets manager and
 	// attempts to retrieve the secret at the requested path.
 	var secret v1.Secret
-	err := p.client.Get(ctx, p.namespace, req.Path, &secret)
+	err := p.client.Get(ctx, p.namespace, path, &secret)
 	if err != nil {
 		return nil, err
 	}
-	data, ok := secret.Data[req.Name]
+	data, ok := secret.Data[name]
 	if !ok {
 		return nil, errors.New("secret not found")
 	}
@@ -59,6 +69,7 @@ func (p *plugin) Find(ctx context.Context, req *secret.Request) (*drone.Secret, 
 	}
 
 	return &drone.Secret{
+		Name: name,
 		Data: string(data),
 		Pull: true, // always true. use X-Drone-Events to prevent pull requests.
 		Fork: true, // always true. use X-Drone-Events to prevent pull requests.
