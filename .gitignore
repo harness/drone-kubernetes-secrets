@@ -28,3 +28,4 @@ vendor/
 
 coverage.out
 .env
+drone-kubernetes-secrets
