@@ -1,4 +1,4 @@
-FROM alpine:3.9
+FROM arm32v6/alpine:3.9
 
 LABEL maintainer="Drone.IO Community <drone-dev@googlegroups.com>" \
   org.label-schema.name="Drone Kubernetes Secrets" \
@@ -10,5 +10,5 @@ ENV GODEBUG netdns=go
 
 RUN apk add --no-cache ca-certificates
 
-ADD release/linux/amd64/drone-kubernetes-secrets /bin/
+ADD release/linux/arm/drone-kubernetes-secrets /bin/
 ENTRYPOINT ["/bin/drone-kubernetes-secrets"]
