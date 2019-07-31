@@ -10,6 +10,7 @@ import (
 
 	"github.com/drone/drone-go/plugin/secret"
 	"github.com/drone/drone-kubernetes-secrets/plugin"
+	"github.com/drone/drone-kubernetes-secrets/server"
 
 	"github.com/ericchiang/k8s"
 	"github.com/ghodss/yaml"
@@ -57,10 +58,12 @@ func main() {
 		plugin.New(client, spec.Namespace),
 		logrus.StandardLogger(),
 	)
+	healthzHandler := server.HandleHealthz()
 
 	logrus.Infof("server listening on address %s", spec.Address)
 
 	http.Handle("/", handler)
+	http.Handle("/healthz", healthzHandler)
 	logrus.Fatal(http.ListenAndServe(spec.Address, nil))
 }
 

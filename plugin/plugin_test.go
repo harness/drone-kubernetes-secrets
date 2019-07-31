@@ -14,7 +14,7 @@ import (
 	"github.com/ericchiang/k8s"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/h2non/gock"
+	"gopkg.in/h2non/gock.v1"
 )
 
 var noContext = context.Background()
