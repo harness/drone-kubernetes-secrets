@@ -200,14 +200,6 @@ local golang_image(os, version) =
             ignore_missing: true,
           },
         },
-        {
-          name: 'microbadger',
-          image: 'plugins/webhook',
-          pull: 'always',
-          settings: {
-            url: { from_secret: 'microbadger_url' },
-          },
-        },
       ],
       trigger: {
         ref: [
