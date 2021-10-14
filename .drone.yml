@@ -9,7 +9,7 @@ platform:
 steps:
 - name: vet
   pull: always
-  image: golang:1.11
+  image: golang:1.13
   commands:
   - go vet ./...
   environment:
@@ -20,7 +20,7 @@ steps:
 
 - name: test
   pull: always
-  image: golang:1.11
+  image: golang:1.13
   commands:
   - go test -cover ./...
   environment:
@@ -50,7 +50,7 @@ platform:
 steps:
 - name: build
   pull: always
-  image: golang:1.11
+  image: golang:1.13
   commands:
   - go build -v -a -tags netgo -o release/linux/amd64/drone-kubernetes-secrets ./cmd/drone-kubernetes-secrets
   environment:
@@ -94,7 +94,7 @@ steps:
 
 - name: tarball
   pull: always
-  image: golang:1.11
+  image: golang:1.13
   commands:
   - tar -cvzf release/drone-kubernetes-secrets_linux_amd64.tar.gz -C release/linux/amd64 drone-kubernetes-secrets
   - "sha256sum release/drone-kubernetes-secrets_linux_amd64.tar.gz > release/drone-kubernetes-secrets_linux_amd64.tar.gz.sha256"
@@ -151,7 +151,7 @@ platform:
 steps:
 - name: build
   pull: always
-  image: golang:1.11
+  image: golang:1.13
   commands:
   - go build -v -a -tags netgo -o release/linux/arm64/drone-kubernetes-secrets ./cmd/drone-kubernetes-secrets
   environment:
@@ -195,7 +195,7 @@ steps:
 
 - name: tarball
   pull: always
-  image: golang:1.11
+  image: golang:1.13
   commands:
   - tar -cvzf release/drone-kubernetes-secrets_linux_arm64.tar.gz -C release/linux/arm64 drone-kubernetes-secrets
   - "sha256sum release/drone-kubernetes-secrets_linux_arm64.tar.gz > release/drone-kubernetes-secrets_linux_arm64.tar.gz.sha256"
@@ -252,7 +252,7 @@ platform:
 steps:
 - name: build
   pull: always
-  image: golang:1.11
+  image: golang:1.13
   commands:
   - go build -v -a -tags netgo -o release/linux/arm/drone-kubernetes-secrets ./cmd/drone-kubernetes-secrets
   environment:
@@ -296,7 +296,7 @@ steps:
 
 - name: tarball
   pull: always
-  image: golang:1.11
+  image: golang:1.13
   commands:
   - tar -cvzf release/drone-kubernetes-secrets_linux_arm.tar.gz -C release/linux/arm drone-kubernetes-secrets
   - "sha256sum release/drone-kubernetes-secrets_linux_arm.tar.gz > release/drone-kubernetes-secrets_linux_arm.tar.gz.sha256"
