@@ -36,7 +36,8 @@ func TestPlugin(t *testing.T) {
 		Name: "username",
 		Path: "docker",
 		Build: drone.Build{
-			Event: "push",
+			Event:  "push",
+			Target: "development",
 		},
 		Repo: drone.Repo{
 			Slug: "octocat/hello-world",
@@ -83,7 +84,7 @@ func TestPlugin_FilterRepo(t *testing.T) {
 		Name: "username",
 		Path: "docker",
 		Build: drone.Build{
-			Event: "push",
+			Event: "push", Target: "development",
 		},
 		Repo: drone.Repo{
 			Slug: "spaceghost/hello-world",
@@ -191,7 +192,7 @@ func TestPlugin_NotFound(t *testing.T) {
 		Name: "username",
 		Path: "docker",
 		Build: drone.Build{
-			Event: "push",
+			Event: "push", Target: "development",
 		},
 		Repo: drone.Repo{
 			Slug: "octocat/hello-world",
@@ -227,7 +228,8 @@ func TestPlugin_InvalidAttribute(t *testing.T) {
 		Name: "token",
 		Path: "docker",
 		Build: drone.Build{
-			Event: "push",
+			Event:  "push",
+			Target: "development",
 		},
 		Repo: drone.Repo{
 			Slug: "octocat/hello-world",

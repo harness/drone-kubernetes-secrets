@@ -12,7 +12,7 @@ import (
 	"github.com/drone/drone-go/plugin/secret"
 
 	"github.com/ericchiang/k8s"
-	"github.com/ericchiang/k8s/apis/core/v1"
+	v1 "github.com/ericchiang/k8s/apis/core/v1"
 )
 
 // New returns a new secret plugin that sources secrets
@@ -66,6 +66,14 @@ func (p *plugin) Find(ctx context.Context, req *secret.Request) (*drone.Secret, 
 	repos := extractRepos(secret.Metadata.Annotations)
 	if !match(req.Repo.Slug, repos) {
 		return nil, errors.New("access denied: repository does not match")
+	}
+
+	// the user can filter out requets based on branch
+	// using the X-Drone-Branches secret key. Check for this
+	// user-defined filter logic.
+	branches := extractBranches(secret.Metadata.Annotations)
+	if !match(req.Build.Target, branches) {
+		return nil, errors.New("access denied: branch does not match")
 	}
 
 	return &drone.Secret{
