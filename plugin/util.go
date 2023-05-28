@@ -28,6 +28,17 @@ func extractEvents(params map[string]string) []string {
 	return nil
 }
 
+// helper function extracts the branch filters from the
+// secret payload in key value format.
+func extractBranches(params map[string]string) []string {
+	for key, value := range params {
+		if strings.EqualFold(key, "X-Drone-Branches") {
+			return parseCommaSeparated(value)
+		}
+	}
+	return nil
+}
+
 func parseCommaSeparated(s string) []string {
 	parts := strings.Split(s, ",")
 	if len(parts) == 1 && parts[0] == "" {
